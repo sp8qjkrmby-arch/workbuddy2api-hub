@@ -132,7 +132,7 @@
 |---|---|---|---|
 | **P2-1** ✅ | 自建更新通道（2026-11-23 完成：4 处指向已改、Release 已发、克隆演练 INSTALL/ROLLBACK 均 PASS、生产已上线 v1.10.9） | 4 处硬编码：`launcher/updater.py:553`、`launcher/config.py:53`、`wb-proxy/wb_updates.py:35`、`wb-proxy/wb_update_portable.py:25`；另有 `WB_UPDATE_REPO` 环境变量旁路、`shell.json.update_mirror` 键可用。指向自己仓库的 release（或静态 JSON + zip） | 端到端装一次成功（**交接文档承认从未在生产跑过**），失败能回滚 |
 | **P2-2** ✅ | 外壳纳入版本管理（外壳源码已入库；10 套件 headless 测试迁入 `repo\shell\tests\` 并全绿） | launcher 与内核的"契约"（要哪个 manifest 键、要哪个 CLI 参数、要哪个 /api 路径）写成 `docs/SHELL-CONTRACT.md`；`2api` 的 31 个测试迁回主干 | 契约文档 + 测试都在 `repo` 里 |
-| **P2-3** | 监控与告警 | `/health` 探活、账号失效、5xx 率、`0x40010004` 事件计数；日志轮转已有（2 MB×3 / 8 MB×3），补"启动退出码审计" | 一份每日摘要（可推送到本对话/托盘） |
+| ~~P2-3~~ | **监控与告警 —— 2026-11-23 决定不做**（单人自用、能自愈、告警收益低于噪音成本；见 `16-decisions.md` D9） | `/health` 探活、账号失效、5xx 率、`0x40010004` 事件计数；日志轮转已有（2 MB×3 / 8 MB×3），补"启动退出码审计" | 一份每日摘要（可推送到本对话/托盘） |
 | **P2-4** | 数据治理 | `usage.jsonl` 按月归档并压缩；`logs.sqlite3` 定期 VACUUM；备份目录 ACL 收紧（含明文 token）；考虑备份用 DPAPI 加密 | 磁盘增长可预测；备份目录仅本用户可读 |
 | **P2-5** | 文档重生 | 按本计划重写 README/交接文档；补录 10-18 ACL 事故（`.acl-recovery/` 有 21 条 JSONL 证据 + 回滚脚本）；`repo` 里 docker-compose 与 README 徽章仍指向上游，需改为自己仓库 | 新维护者 30 分钟能上手 |
 
