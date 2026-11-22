@@ -9,3 +9,4 @@
 *.ipk binary
 *.apk binary
 *.tar.gz binary
+*.cmd text eol=crlf
