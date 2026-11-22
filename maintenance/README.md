@@ -59,3 +59,15 @@ powershell -ExecutionPolicy Bypass -File shell\ops\backup-wb-shell.ps1 -IncludeC
 ## 五、当前状态与下一步
 
 见 [`maintenance/PLAN.md`](PLAN.md)：P0 止血已完成（冷备份 + 日备 + 冻结失效的更新检查），P1 主干重建进行中（本仓库就是成果），P2 待做自建更新通道。
+
+## 六、知识库（字典式，按主题分册）
+
+`maintenance\handbook\` 是维护知识库：**一册一主题**，单册 20~70 行，入口只有一张索引表。
+
+| 你想… | 从这进 |
+|---|---|
+| 快速定位"我该读哪一册" | [`handbook\00-INDEX.md`](handbook/00-INDEX.md) |
+| 找维护脚本（备份/重启/索引生成） | [`tools\`](tools/) |
+
+> 设计目的：避免"读一个文件就把上下文撑爆"。索引里有每册的行数/KB，按需只读一册。
+> 新增或修改分册后，运行 `tools\build-handbook-index.ps1` 重建索引。
