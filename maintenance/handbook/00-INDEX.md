@@ -1,6 +1,6 @@
 ﻿# 知识库索引（字典入口）
 
-> 生成时间：2026-11-23 04:57 ｜ 由 `scripts\build-handbook-index.ps1` 自动汇总，**改了分册就重跑**。
+> 生成时间：2026-11-23 05:22 ｜ 由 `scripts\build-handbook-index.ps1` 自动汇总，**改了分册就重跑**。
 >
 > **用法（省上下文的规矩）**：
 > 1. 先看下面的速查表，定位到**一个**主题；
@@ -50,10 +50,10 @@
 | 07 | **backup** | 要做/恢复/校验备份、换机迁移、怀疑丢了数据时 | 备份, 恢复, 计划任务, DPAPI, 明文token, 冷备份 | 54 | 3.1 | `07-runbook-backup-restore.md` |
 | 08 | **config** | 改配置、解释某个开关、排查"为什么设置没生效"时 | shell.json, settings.json, 端口, 看门狗, 更新检查, 面板密码, PBKDF2, 限额 | 54 | 3.4 | `08-config-reference.md` |
 | 09 | **logs** | 排查异常、怀疑有静默错误、想知道日志写在哪/怎么轮转时 | shell.log, core-8788.log, 轮转, 0x40010004, Traceback, ERROR | 43 | 2.5 | `09-logs.md` |
-| 10 | **verification** | 改完代码要验收、想确认"仓库==生产"、准备提交/发版前 | 基线校验, 冒烟, run_all, 261, check_clean_checkout, 61 MATCH | 46 | 3 | `10-verification.md` |
+| 10 | **verification** | 改完代码要验收、想确认"仓库==生产"、准备提交/发版前 | 基线校验, 冒烟, run_all, 261, check_clean_checkout, 61 MATCH | 54 | 3.5 | `10-verification.md` |
 | 11 | **git** | 提交/推送/建 tag、认证报错、别人克隆后脚本坏了时 | push, GCM, OAuth, GH007, filter-branch, credential.helper, tag, eol, crlf | 58 | 3.3 | `11-git-workflow.md` |
 | 12 | **rules** | 动手改任何东西之前（尤其是"顺手改一点"的冲动出现时） | 红线, 禁止, 提交纪律, 生产保护, 端口, 测试 | 33 | 2.7 | `12-rules.md` |
-| 13 | **known-issues** | 遇到怪现象先查这里；计划下一步做修复时 | bug, 待修, 版本双轨, 404, 0x40010004, setup_vendor, DPAPI | 33 | 3.1 | `13-known-issues.md` |
+| 13 | **known-issues** | 遇到怪现象先查这里；计划下一步做修复时 | bug, 待修, 版本双轨, 404, 0x40010004, setup_vendor, DPAPI | 33 | 3.2 | `13-known-issues.md` |
 | 14 | **gotchas** | 写脚本/批处理/计划任务报怪错时；踩过一遍不想再踩时 | BOM, CRLF, Tee-Object, UTF-16, PSScriptRoot, WindowsApps, 0x80070002, ACL, DPAPI | 51 | 3.6 | `14-gotchas-windows.md` |
 | 15 | **security** | 改仓库可见性、处理备份、怀疑泄露、账号异常时 | token, 明文, DPAPI, .gitignore, private, LAN, 面板密码, 封号 | 37 | 2.8 | `15-security.md` |
 | 16 | **decisions** | 纠结"该不该升级/该不该跟随社区/要不要重构"时 | 决策, 不追新, 自建通道, 不重构, 替代provider, 记录理由 | 37 | 3.2 | `16-decisions.md` |
@@ -91,4 +91,4 @@
 | 更新时机 | 每次"踩新坑 / 改架构 / 改流程"后立即补，别攒 |
 
 
-> 统计：共 23 册，合计约 1050 行 / 71 KB。
+> 统计：共 23 册，合计约 1058 行 / 71.6 KB。

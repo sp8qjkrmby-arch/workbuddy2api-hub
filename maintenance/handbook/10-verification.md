@@ -39,6 +39,16 @@ $env:PYTHONDONTWRITEBYTECODE='1'
 
 覆盖盲区：面板前端只有 DOM 桩（`tests/_dom_stub.js`），**真浏览器行为没测**；外壳（`shell\launcher`）不在这批测试里。
 
+### 门 2b：外壳 headless 测试（20 秒，2026-11-23 新增）
+
+```powershell
+powershell -ExecutionPolicy Bypass -File C:\Desktop\2api维护\repo\shell\tests\run-headless.ps1
+```
+
+当前基线：**10 passed / 0 failed**（`check_js_api` / `ui_api` / `watchdog` / `kernel_dir` /
+`panel_secret` / `lan_share` / `download_resume` / `relaunch` / `update_notify` / `snapshot_check`）。
+不起窗口、不碰 8788、不写注册表。GUI 探针与需要 vendor 的两套仍是手工档，说明见
+`repo\shell\tests\README.md`。
 ## 门 3：冒烟门禁（2 分钟）—— "端到端还能不能通到上游"
 
 上游仓库 `CONTRIBUTING.md` 第 13~20 行把它定为**硬性门禁**：提交前必须过，四项全绿。

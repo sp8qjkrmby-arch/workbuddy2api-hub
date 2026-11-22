@@ -13,7 +13,7 @@
 | 3 | 更新仓库硬编码 4 处指向已 404 的仓库 | ✅ **已修**（4 处全改指自维护仓库；通道已实测可用） | `launcher\updater.py:553`、`launcher\config.py:53`、`wb-proxy\wb_updates.py:35`、`wb-proxy\wb_update_portable.py:25` | 已恢复检查（`check_update_on_launch=true`） |
 | 4 | 内核被外部终止：82 次启动中 38 次退出码 `0x40010004` | 🔵 未查根因 | `data\core-8788.log` | 偶发断流，看门狗兜住 |
 | 5 | `build_shell.ps1` 引用的 `tests\setup_vendor.ps1` 在生产目录**不存在** | 🟡 待修 | `wb-shell\build_shell.ps1` | 外壳无法从生产目录重建 |
-| 6 | 生产目录无任何测试；外壳的 31 个探针测试只在旧目录 `C:\Desktop\2api\tests\` | 🟡 待迁移 | — | 外壳层没有回归网 |
+| 6 | 生产目录无测试；旧目录 29 个文件**已迁 11 个**（10 套件 headless 全绿） | ◐ 部分完成 | `repo\shell\tests\` | GUI 探针 12 个 + 需 vendor/注册表 2 个仍留旧目录（手工档） |
 | 7 | `docker-compose.yml` 与 README 徽章仍指向上游 `ardeyouxipianyi/...` | 🟡 待改 | `repo\docker-compose.yml`、`repo\README.md` | fork 里直接拉镜像会拿到不存在的产物 |
 | 8 | `ops/aliyun/` 里残留 `xybzljc` 仓库引用 | 🟡 待清理 | `repo\ops\aliyun\` | 未使用的更新器，指向不明 |
 | 9 | `read_core_version` 修复后 `shell.json.last_core_version` 仍为空 | 🔵 观察中 | — | `shell.log` 已能打印"版本 1.10.8"，字段可能要下次保存配置才写 |

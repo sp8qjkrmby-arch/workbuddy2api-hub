@@ -187,3 +187,41 @@ P1-4 便携包、P1-5 全量测试首跑、P2-1 自建更新通道、账号真�
 - 生产侧：`C:\Desktop\wb-shell\wb-proxy\updates\backup-1.10.9\`（61 个文件，由产品 `backup_current` 生成）
 - 仓库侧：`maintenance\baseline\core-sha256.v1.10.9.txt`
 - 发布物：`repo\dist\workbuddy2api-hub-v1.10.9.zip` + `SHA256SUMS`（dist 被 gitignore，随 Release 归档）
+
+---
+
+## 2026-11-23 05:19~05:3x 第六轮（C：外壳测试迁入）
+
+### 分类与结果
+
+旧目录 `C:\Desktop\2api\tests\` 共 **29 个文件**（25 py + 2 js + 2 ps1）。按"能否在仓库里无副作用运行"分档：
+
+| 档 | 数量 | 处置 |
+|---|---|---|
+| headless（不起窗、不碰 8788、不写注册表） | 11 py（10 套件 + `snapshot_core.py` 辅助库） | ✅ **已迁入 `repo\shell\tests\`，10/10 全绿** |
+| GUI 探针（真窗口、鼠标键盘、窗口名与生产同名） | 12 py + 1 ps1 | 留在旧目录，手工档（跑前告知、跑后 `kill_test_processes.py`） |
+| 需 vendor / 注册表 / 真内核副本 | `tray_autostart_test.py`（PIL + HKCU Run）、`update_isolated_test.py`（18899 真内核） | 留旧目录；vendor 就绪后可再迁 |
+| 内核看板前端脚本 | `bar_menu_test.js`、`collapse_sections_test.js` | 归内核侧，不属外壳 |
+| 工具 | `grab_window.ps1`、`setup_vendor.ps1` | 不是测试；后者正好补上 `build_shell.ps1` 缺失的 vendor 依赖 |
+
+### 布局适配（关键改动）
+
+旧测试假设"测试目录就在外壳根下、内核在 `<shell>\wb-proxy`"。仓库布局是内核在根、外壳在 `shell\`。
+每个迁移文件头部注入：
+
+```python
+_SHELL_TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
+_KERNEL_DIR = (os.environ.get("WB_KERNEL_DIR")
+               or os.path.dirname(os.path.dirname(_SHELL_TESTS_DIR)))
+```
+
+并把 `os.path.join(_SHELL_DIR, "wb-proxy")` 换成 `_KERNEL_DIR`（共 2 处表达式，10 个文件）。
+
+### 新增
+
+- `repo\shell\tests\run-headless.ps1`：一条命令跑全部（自动挑解释器，支持 `-Python` / `-Only`）
+- `repo\shell\tests\README.md`：三档分类、运行方法、适配说明、未迁原因
+
+### 基线
+
+**10 passed / 0 failed / 0 skipped**（约 20 秒）；不依赖第三方包、不需要管理员权限。
