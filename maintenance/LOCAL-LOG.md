@@ -70,3 +70,29 @@
 | 撤销计划任务 | `schtasks /Delete /TN "wb-shell-daily-backup" /F` |
 | 撤销仓库改动 | `git reset --hard legacy-fork-v1.7.4`（本地仓库，未推送过） |
 | 生产内核回滚 | `C:\Desktop\wb-shell\data\backups\core-*.zip`（外壳自带 keep_backups=3 的锚点） |
+
+---
+
+## 2026-11-22 20:2x 第二轮（修 bug + 重启 + 推送准备）
+
+### 1. 修 `read_core_version`（P1-3 ①）✅
+
+- 根因：只读 `wb_proxy.py` 前 400000 字符，而 v1.10.8 的 `version` 在偏移 **423277**。
+- 改法：全文读取（上限 8 MB，仍有 `(mtime,size)` 缓存兜底）。
+- 验证：生产 runtime 直接调用 → 修复前 `''`，修复后 `'1.10.8'`；`py_compile` 通过。
+- 部署：已覆盖 `C:\Desktop\wb-shell\launcher\service.py`；原文件备份 `backups\prod-files\service.py.orig-20261122`。
+- 生效：需重启外壳 → 已登记一次性任务 `wb-shell-restart-once`（20:27），跑完自删。
+
+### 2. 重启流程脚本化 ✅
+
+`scripts\restart-wb-shell.ps1`（同时入库 `shell/ops/`）：停外壳 → 停内核 → 等 8788 释放 → `wscript 启动.vbs --tray-only` → 轮询 `/health` 最长 120 秒（失败再拉一次）→ 复核 `shell.json` 关键项 → 抓 `shell.log` 尾部 → 自删一次性任务。日志写 `logs\restart-<时间戳>.log`。
+
+### 3. 推送 GitHub：已就绪，待授权 ⏳
+
+- 仓库：`sp8qjkrmby-arch/workbuddy2api-hub`（你的 fork），本地 3 个提交 + 2 个 tag 待推。
+- 障碍：本机没有 `gh` CLI；`~/.ssh/id_rsa` **未被 GitHub 接受**（`Permission denied (publickey)`）；HTTPS 无已存凭据。
+- 已修：系统级 `credential.helper` 路径没加引号（`C:/Program Files/...` 被当命令截断），已在本仓库用 `--local` 覆盖为带引号的完整路径。
+- 两种授权方式：
+  1. 双击 `scripts\push-to-github.cmd` → 弹出浏览器授权 → 自动 push main + tags；
+  2. 或者建一个 PAT（fine-grained，仅该仓库 Contents: Read and write），然后 `git remote set-url origin https://<TOKEN>@github.com/sp8qjkrmby-arch/workbuddy2api-hub.git`。
+- ⚠️ 建议把该 fork 设为 **private**：仓库里现在有 `shell\交接文档.md`（记录了你的目录结构、面板密码机制、备份策略）与 `reports` 里的环境细节。公开也无密钥泄露（已扫描），但没必要公开。
