@@ -23,7 +23,9 @@ $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $log = Join-Path $LogDir "restart-$stamp.log"
 function L([string]$m) {
     $line = "[{0}] {1}" -f (Get-Date -Format 'HH:mm:ss'), $m
-    $line | Tee-Object -FilePath $log -Append | Out-Null
+    Write-Host $line
+    # 不用 Tee-Object：Windows PowerShell 5.1 会写成 UTF-16LE，日志变"二进制"
+    [System.IO.File]::AppendAllText($log, $line + [Environment]::NewLine, (New-Object System.Text.UTF8Encoding($true)))
 }
 
 function Test-Health {
