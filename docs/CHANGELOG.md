@@ -1,3 +1,12 @@
+## v1.10.9
+
+社区 fork 自行维护后的第一个自建发布。上游仓库与作者账号已于 2026-11-20 前后被删除（全站 404，无重定向），本版本在功能上等价于 v1.10.8，只做"脱离死源"所必需的改动：
+
+- **更新源改为自维护仓库**：`wb_updates.DEFAULT_REPOSITORY` 与 `wb_update_portable.REPO_DEFAULT` 从已 404 的 `ardeyouxipianyi/workbuddy2api-hub` 改到 `sp8qjkrmby-arch/workbuddy2api-hub`。内核的"检查更新 / 面板安装更新"由此恢复可用（此前每次检查必然是 404）。
+- **打包白名单修正**：`release/portable.txt` 补登记 `wb_entitlements.py`。上游 v2.1.3 的发布包里实际带着它（升级链路不清理残留文件），但白名单未列，导致清单与磁盘不一致，`_test_release_assets.py::test_every_module_is_listed` 恒红。
+- **版本号统一**：`wb_proxy.py` 两处版本串与 `wrt` 的 `PKG_VERSION` 同步为 `1.10.9`，维持"release tag == manifest.version == server_version"的约定。（上游曾出现 tag `v2.1.3` ↔ 包内 `1.10.8` 的双轨，使 `validate_stage` 必然失败。）
+- **文档**：README 的下载/发布链接、`docker-compose.yml` 的镜像名改指自维护仓库。
+- 说明：本文件历史条目里的 PR / Issue 链接指向已删除的上游仓库，仅作留档，不再可达。
 ## v1.10.8
 
 CodeArts 工具归一化与空函数修复（#750 / #752）、配置并发安全（#751）、账号 UID 注入防护（#757）、日志轮转日限校验（#755）、出站身份诊断工具（#756）与 DeepSeek Flash 真实计费校准：

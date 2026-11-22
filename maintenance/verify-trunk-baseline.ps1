@@ -5,7 +5,7 @@
 .DESCRIPTION
     读取 maintenance\baseline\core-sha256.v1.10.8.txt（64 条，来自生产实例
     C:\Desktop\wb-shell\data\baseline-core-sha256.txt），对仓库根目录下同名文件重算 SHA256。
-    预期结果：61 MATCH / 3 MISSING-EXPECTED / 0 DIFF。
+    预期结果（v1.10.8 生产基线 vs 当前主干）：发新版时允许的 4 个文件走 DIFF-ALLOWED，其余必须 MATCH。
 
     例外清单（EXCEPTIONS）里给出的 3 个文件不可能出现在 git 主干中：
       release-manifest.json        构建产物，由 release/release_tools.py 从 portable.txt 生成
@@ -17,7 +17,9 @@
 [CmdletBinding()]
 param(
     [string]$Root,
-    [string]$Baseline
+    [string]$Baseline,
+    # 允许"已声明"的变更：发新版时版本串必然与上一版基线不同
+    [string[]]$AllowChanged = @()
 )
 
 $ErrorActionPreference = 'Stop'
@@ -27,6 +29,9 @@ $here = $PSScriptRoot
 if (-not $here) { $here = Split-Path -Parent $MyInvocation.MyCommand.Path }
 if (-not $Root)     { $Root = Split-Path -Parent $here }
 if (-not $Baseline) { $Baseline = Join-Path $here 'baseline\core-sha256.v1.10.8.txt' }
+
+# -AllowChanged 支持逗号分隔或空格分隔
+$AllowChanged = @($AllowChanged | ForEach-Object { $_ -split ',' } | Where-Object { $_ })
 
 $expectMissing = @(
     'release-manifest.json',
@@ -50,7 +55,7 @@ Get-Content -LiteralPath $Baseline | ForEach-Object {
         [void]$rows.Add([pscustomobject]@{ Status = $status; File = $name; Detail = '' })
     } else {
         $got = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLower()
-        $status = if ($got -eq $want) { 'MATCH' } else { 'DIFF' }
+        $status = if ($got -eq $want) { 'MATCH' } elseif ($AllowChanged -contains $name) { 'DIFF-ALLOWED' } else { 'DIFF' }
         [void]$rows.Add([pscustomobject]@{ Status = $status; File = $name; Detail = $(if ($status -eq 'DIFF') { "$want != $got" } else { '' }) })
     }
 }
@@ -60,7 +65,7 @@ Write-Host "== 基线校验: $Baseline" -ForegroundColor Cyan
 Write-Host "   root: $Root" -ForegroundColor DarkGray
 Write-Host ''
 foreach ($g in $byStatus) {
-    $color = switch ($g.Name) { 'MATCH' { 'Green' } 'MISSING-EXPECTED' { 'Yellow' } default { 'Red' } }
+    $color = switch ($g.Name) { 'MATCH' { 'Green' } 'MISSING-EXPECTED' { 'Yellow' } 'DIFF-ALLOWED' { 'Cyan' } default { 'Red' } }
     Write-Host ("  {0,-16} {1}" -f $g.Name, $g.Count) -ForegroundColor $color
 }
 $bad = $rows | Where-Object { $_.Status -in @('DIFF', 'MISSING') }
