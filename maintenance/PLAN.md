@@ -26,13 +26,14 @@
 | P0-2 冻结更新检查 | ✅ | `data\shell.json`：`check_update_on_launch=false`、`repo` 改指自己的 fork（**下次重启外壳生效**） |
 | P1-1 取回 v1.10.8 源码 | ✅ | 来自 `M-strange/workbuddy2api-hub` tag `v1.10.8`；与生产基线比对 **60/64 逐字节一致、0 差异**，另 4 项已查清（构建产物 / 上游删但生产残留 / 本地 .bak） |
 | P1-2 合并可信主干 | ✅（方式修订） | 不再"从 v1.7.4 增量补"，而是**直接用 v1.10.8 快照重建主干**（v1.7.4 缺 21 个顶层项，无法增量补齐），并把 `wb_entitlements.py` 从 `acc0b332` 取回补上 |
-| P1-3 修三个小 bug | ⬜ 未开始 | 见 P1-3，仍是待办 |
+| P1-3 修三个小 bug | ◐ 1/3 完成 | `read_core_version` 已修并部署（底栏显示 1.10.8）；版本双轨、404 噪音待做 |
 | P1-4 打包 + 旁路验证 | ◐ 部分 | 主干已在隔离端口 8799 跑通端到端（真实上游回复）；便携包尚未生成 |
-| P1-5 CI | ⬜ 未开始 | 本地 `verify-trunk-baseline.ps1` 已可用；`run_all.py` 待首跑 |
+| P1-5 CI | ◐ 本地全绿 | **全量 261 passed / 0 failed / 0 skipped（59.9s）**；`check_clean_checkout` 通过；GitHub Actions 未启用 |
 | P0-3 生产代码入库 | ✅ | 分支 `main` 两个提交 + tag `v1.10.8-local.1`；旧状态留存 tag `legacy-fork-v1.7.4` |
 | P0-4 账号体检 | ⬜ 未开始 | 11-23 那批 token 到期就在明天 |
 
 **新增资产（原计划未列）**：`maintenance/verify-trunk-baseline.ps1` —— 一条命令复验"仓库主干 == 生产二进制"，当前 `61 MATCH / 0 DIFF / 3 MISSING-EXPECTED`。这是防止未来任何改动悄悄跑偏的护栏。
+**新增资产**：`maintenance/TEST-BASELINE.md`（测试基线、覆盖盲区、复现命令）。
 **新增约束（来自仓库 `CONTRIBUTING.md` 的硬性门禁）**：提交前必须在隔离端口（8799）完成冒烟：服务能起、面板能开、**端到端真实上游请求成功**。已据此执行并留证 `reports/07-smoke-test.md`。
 
 ---
