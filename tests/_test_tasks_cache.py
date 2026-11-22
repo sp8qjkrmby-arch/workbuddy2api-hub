@@ -60,6 +60,11 @@ class FakePool(object):
         return [a.public() for a in self.accounts
                 if realm is None or a.realm == realm]
 
+    def remove(self, uid):
+        before = len(self.accounts)
+        self.accounts = [a for a in self.accounts if a.uid != uid]
+        return len(self.accounts) < before
+
 
 class FakeUpstream(object):
     """Growth tasks, summary, task run and travel - with no network at all.
@@ -87,7 +92,7 @@ class FakeUpstream(object):
         self.reads.append(("summary", acc.uid))
         return {"kind": "summary", "uid": acc.uid, "epoch": self.epoch}
 
-    def run_tasks(self, acc, gap=1.0):
+    def run_tasks(self, acc, gap=1.0, claim=True):
         self.actions.append(("run", acc.uid))
         return {"earned_credit": 7, "logs": ["ran"]}
 
@@ -259,6 +264,27 @@ class ActionInvalidationTests(unittest.TestCase):
         self.assertIn(("travel", "uid-a"), self.upstream.actions)
         self.assert_refetched(warm, "/tasks/travel")
 
+    def test_task_claim_is_per_account_and_refetches(self):
+        warm = self.warm()
+        self.upstream.bump()
+        calls = []
+        orig = T.claim_task
+        T.claim_task = lambda acc, code: (calls.append((acc.uid, code)) or
+                                          {"ok": True, "credit": 12})
+        try:
+            response = self.drive("/tasks/claim",
+                                  {"uid": "uid-a", "code": "first_buddy"})
+        finally:
+            T.claim_task = orig
+        self.assertTrue(response.get("ok"), response)
+        self.assertEqual(calls, [("uid-a", "first_buddy")])
+        self.assert_refetched(warm, "/tasks/claim")
+
+    def test_task_claim_requires_a_single_account(self):
+        response = self.drive("/tasks/claim",
+                              {"uid": "all", "code": "first_buddy"})
+        self.assertFalse(response.get("ok"), response)
+
     def test_account_checkin_invalidates_the_snapshot(self):
         warm = self.warm()
         self.upstream.bump()
@@ -267,6 +293,13 @@ class ActionInvalidationTests(unittest.TestCase):
                          "签到动作没有真的跑起来: %r" % response)
         self.assertEqual(self.account.checkins, 1, "签到没有被调用")
         self.assert_refetched(warm, "/accounts/checkin")
+
+
+    def test_account_delete_invalidates_the_snapshot(self):
+        warm = self.warm()
+        self.upstream.bump()
+        response = self.drive("/accounts/delete", {"uid": "uid-a"})
+        self.assertTrue(response.get("deleted"))
 
 
 if __name__ == "__main__":
