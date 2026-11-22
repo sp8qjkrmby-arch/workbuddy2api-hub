@@ -18,7 +18,27 @@
 
 ---
 
+## 0.5 当前进度（2026-11-22 首次执行，已落地）
+
+| 计划项 | 状态 | 实际落地 |
+|---|---|---|
+| P0-1 冷备份 + 日备 | ✅ | `scripts\backup-wb-shell.ps1`（实测 131 文件 / 19 MB）；Windows 计划任务 `wb-shell-daily-backup` 每日 04:00，已试跑 `LastTaskResult=0`；首份冷备份 `backups\wb-shell-20261122-194234-cold-0001\` |
+| P0-2 冻结更新检查 | ✅ | `data\shell.json`：`check_update_on_launch=false`、`repo` 改指自己的 fork（**下次重启外壳生效**） |
+| P1-1 取回 v1.10.8 源码 | ✅ | 来自 `M-strange/workbuddy2api-hub` tag `v1.10.8`；与生产基线比对 **60/64 逐字节一致、0 差异**，另 4 项已查清（构建产物 / 上游删但生产残留 / 本地 .bak） |
+| P1-2 合并可信主干 | ✅（方式修订） | 不再"从 v1.7.4 增量补"，而是**直接用 v1.10.8 快照重建主干**（v1.7.4 缺 21 个顶层项，无法增量补齐），并把 `wb_entitlements.py` 从 `acc0b332` 取回补上 |
+| P1-3 修三个小 bug | ⬜ 未开始 | 见 P1-3，仍是待办 |
+| P1-4 打包 + 旁路验证 | ◐ 部分 | 主干已在隔离端口 8799 跑通端到端（真实上游回复）；便携包尚未生成 |
+| P1-5 CI | ⬜ 未开始 | 本地 `verify-trunk-baseline.ps1` 已可用；`run_all.py` 待首跑 |
+| P0-3 生产代码入库 | ✅ | 分支 `main` 两个提交 + tag `v1.10.8-local.1`；旧状态留存 tag `legacy-fork-v1.7.4` |
+| P0-4 账号体检 | ⬜ 未开始 | 11-23 那批 token 到期就在明天 |
+
+**新增资产（原计划未列）**：`maintenance/verify-trunk-baseline.ps1` —— 一条命令复验"仓库主干 == 生产二进制"，当前 `61 MATCH / 0 DIFF / 3 MISSING-EXPECTED`。这是防止未来任何改动悄悄跑偏的护栏。
+**新增约束（来自仓库 `CONTRIBUTING.md` 的硬性门禁）**：提交前必须在隔离端口（8799）完成冒烟：服务能起、面板能开、**端到端真实上游请求成功**。已据此执行并留证 `reports/07-smoke-test.md`。
+
+---
+
 ## 1. 现状基线（已逐项核实）
+
 
 ### 1.1 三份代码资产，别搞混
 
@@ -245,3 +265,6 @@ $env:HTTPS_PROXY='http://127.0.0.1:7897'; $env:HTTP_PROXY='http://127.0.0.1:7897
 | 仓库结构、146 套测试、CI/发布门禁、双巨石 | `reports/01-repo-analysis.md` |
 | 外壳 6 阶段历史、未完成 TODO、测试怎么跑 | `reports/04-history.md` |
 | 原仓库删号、社区替代源、通道可持续性 | `reports/05-ecosystem.md` |
+| v1.10.8 源码溯源与 60/64 逐字节比对、4 项缺失的解释 | `reports/06-source-provenance.md` |
+| 主干冒烟门禁（隔离端口 8799，端到端真实回复） | `reports/07-smoke-test.md` + `reports/smoke-evidence/` |
+| 基线复验（61 MATCH / 0 DIFF） | `repo\maintenance\verify-trunk-baseline.ps1` 输出 |
