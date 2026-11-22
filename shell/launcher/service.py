@@ -101,10 +101,14 @@ def read_core_version(core_dir):
         return ""
     try:
         with open(entry, "r", encoding="utf-8", errors="replace") as fh:
-            head = fh.read(400000)
+            # 版本串位置不固定：v1.10.8 的 "version" 在偏移 423 277 处，旧实现只读前
+            # 400 000 字符，导致底栏显示「版本 ?」、current_version 为空。
+            # 全文读取（1.2 MB 量级）有 (mtime, size) 缓存兜底，status() 每 0.5 秒
+            # 问一次也不会真的重读文件。
+            text = fh.read(8 * 1024 * 1024)
     except Exception:
         return ""
-    match = VERSION_RE.search(head)
+    match = VERSION_RE.search(text)
     version = match.group(1).strip() if match else ""
     _VERSION_CACHE[entry] = (key, version)
     return version
