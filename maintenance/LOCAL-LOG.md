@@ -132,3 +132,20 @@
 ### 4. 仍未做
 
 P1-4 便携包、P1-5 全量测试首跑、P2-1 自建更新通道、账号真实可用性抽测。
+
+---
+
+## 2026-11-22 20:57~21:05 第四轮（全量测试首跑：261/261 全绿）
+
+| 项 | 结果 |
+|---|---|
+| 命令 | `tests\run_all.py --jobs 8 --logs suite-logs` |
+| 解释器 | `wb-proxy\python\python.exe`（CPython 3.12.14，对齐 CI 的 3.12 腿）+ node v24.18.0 |
+| 首轮 | 260 passed / **1 failed** / 0 skipped，59~63 秒 |
+| 唯一失败 | `_test_release_assets.py::test_every_module_is_listed`：`['wb_entitlements.py'] != []` |
+| 根因 | `release/portable.txt`（打包白名单）里没有 `wb_entitlements.py`；我们为对齐生产补回了这个模块，但没登记进白名单 |
+| 处置 | 在 `wb_egress.py` 之后按字母序插入 `wb_entitlements.py`（生产包里的 `release-manifest.json` 本来就有这条） |
+| 复跑 | **261 passed / 0 failed / 0 skipped，59.9 秒** |
+| 副作用 | 无：`PYTHONDONTWRITEBYTECODE=1`，套件全用临时目录，`check_clean_checkout.py` 通过；8788 全程未用 |
+
+结论：这套代码**可改**——1 分钟就能验证有没有回归。测试重心在 usage/pricing/aggregate 后端；面板前端只有 DOM 桩；外壳的 31 个探针测试仍留在 `C:\Desktop\2api\tests\`，待迁入（P2-2）。
