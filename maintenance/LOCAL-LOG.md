@@ -96,3 +96,39 @@
   1. 双击 `scripts\push-to-github.cmd` → 弹出浏览器授权 → 自动 push main + tags；
   2. 或者建一个 PAT（fine-grained，仅该仓库 Contents: Read and write），然后 `git remote set-url origin https://<TOKEN>@github.com/sp8qjkrmby-arch/workbuddy2api-hub.git`。
 - ⚠️ 建议把该 fork 设为 **private**：仓库里现在有 `shell\交接文档.md`（记录了你的目录结构、面板密码机制、备份策略）与 `reports` 里的环境细节。公开也无密钥泄露（已扫描），但没必要公开。
+
+---
+
+## 2026-11-22 20:30~20:5x 第三轮（重启验证 + 推送成功）
+
+### 1. 重启结果 ✅
+
+| 时刻 | 事件 |
+|---|---|
+| 20:30:02 | 任务开始，重启前 `/health` 200 |
+| 20:30:03 | 停旧外壳（22260） |
+| 20:30:07 | 8788 端口释放 |
+| 20:30:10 | 新内核启动（29424），Job Object 已绑定 |
+| 20:30:14 | **`/health` 200**，总耗时约 12 秒，实际断流 7 秒 |
+
+- 新进程：外壳 20648 / 内核 29424；旧 22260 / 11632 已退出
+- `shell.log`：`内核已就绪：账号 9 个（可用 7），版本 1.10.8` ← `read_core_version` 修复生效的直接证据
+- `shell.json` 两项配置未被回写覆盖；一次性任务已自删
+- 顺手修：重启脚本用 `Tee-Object` 在 PowerShell 5.1 下写 UTF-16LE，日志变二进制 → 改显式 UTF-8 追加
+
+### 2. 推送 GitHub ✅
+
+- 远端 `sp8qjkrmby-arch/workbuddy2api-hub`：`main` = `2136220`，tag `v1.10.8-local.2`（附注标签）与 `legacy-fork-v1.7.4` 均已推上
+- **第一次 push 被 GitHub 拒（GH007）**：提交邮箱 `2359668069@qq.com` 在 GitHub 是私密邮箱，而仓库开了"阻止命令行推送暴露邮箱"。
+  → 处置：`git config --local user.email = 242735504+sp8qjkrmby-arch@users.noreply.github.com`，用 `filter-branch --env-filter` 重写 `2fa6287..HEAD` 的 author/committer 邮箱（只重写我们这 6 个本地提交，641 条上游历史不动），并重建 tag。
+- **凭据**：走 Git Credential Manager 的浏览器 OAuth，令牌存在 Windows 凭据管理器（DPAPI）。撤销：`git credential-manager github logout`
+- 顺手修：`C:\Users\63648\.gitconfig` 里 `credential.helper` 路径**没加引号**，每次 push 都刷一行 `line 1: C:/Program: No such file or directory`。已改为带引号的完整路径。
+
+### 3. 教训：`.cmd` 必须 CRLF + ASCII
+
+用户双击 `push-to-github.cmd` 时出现 `'PROXY' 不是内部或外部命令` 与乱码——根因是**文件用 LF 换行**（cmd.exe 按行解析，LF 会把 `set HTTPS_PROXY=...` 截断成 `PROXY`），外加 UTF-8 中文在 GBK 控制台乱码。
+→ 三个 `.cmd` 全部重写：**CRLF + 纯 ASCII + 用 `%~dp0` 代替中文字面路径**，并用 stub 验证过分行与分支。
+
+### 4. 仍未做
+
+P1-4 便携包、P1-5 全量测试首跑、P2-1 自建更新通道、账号真实可用性抽测。
