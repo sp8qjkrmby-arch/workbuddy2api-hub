@@ -149,3 +149,41 @@ P1-4 便携包、P1-5 全量测试首跑、P2-1 自建更新通道、账号真�
 | 副作用 | 无：`PYTHONDONTWRITEBYTECODE=1`，套件全用临时目录，`check_clean_checkout.py` 通过；8788 全程未用 |
 
 结论：这套代码**可改**——1 分钟就能验证有没有回归。测试重心在 usage/pricing/aggregate 后端；面板前端只有 DOM 桩；外壳的 31 个探针测试仍留在 `C:\Desktop\2api\tests\`，待迁入（P2-2）。
+
+---
+
+## 2026-11-23 04:46~05:0x 第五轮（A 便携包 + B 自建更新通道）
+
+### A. P1-4 便携包 ✅
+
+| 步骤 | 结果 |
+|---|---|
+| 取固定运行时 | CPython `3.12.15+20261003`，44.4 MB，sha256 与钉死值 `4b6f0bee…0f08` 一致 |
+| 裁剪 | 528 文件，契约检查通过（61 必需文件在，17 项裁剪未回流） |
+| 打包 | `dist\workbuddy2api-hub-v1.10.8.zip` 10.31 MB；包内 61 受管文件 + `python\` + manifest |
+| 载荷校验 | 与生产基线 61 MATCH / 0 DIFF |
+| 冒烟（包内自带 python，8799） | `/health` 200、22 模型、chat `PACKAGE_OK`、日志 0 错 |
+
+### B. P2-1 自建更新通道 ✅
+
+| 步骤 | 结果 |
+|---|---|
+| 代码改动 | 4 处仓库常量改指自维护仓库；版本统一 1.10.9；CHANGELOG/README/compose 同步 |
+| 门 1 | 发版窗口：57 MATCH / 4 DIFF-ALLOWED / 3 MISSING-EXPECTED（新增 `-AllowChanged` 支持） |
+| 门 2 | **261 passed / 0 failed / 0 skipped**（70.9 s） |
+| 发布 | GitHub Release **v1.10.9**：zip 10.31 MB + SHA256SUMS，匿名可下（HEAD 200） |
+| 克隆演练 | 8799 上 `run_update` → **INSTALL PASS**（11.8 s，自动备份 1.10.8）；`run_rollback` → **ROLLBACK PASS**（8.7 s） |
+| 生产上线 | `promote-production.ps1` 脱离会话：停外壳 → `promote.py`（复用产品 `backup_current`/`apply_stage`）→ 起外壳 → 健康检查 = **PASS**，断流 ~11 秒 |
+| 上线后 | 生产 manifest/`server_version` 均 1.10.9；真请求冒烟 `PACKAGE_OK`（1.48 s）；基线重录 `core-sha256.v1.10.9.txt` → 门 1 回到 **61 MATCH** |
+| 更新检查 | 恢复 `check_update_on_launch=true`（通道可用）；launcher 两个默认值也已改指自维护仓库 |
+
+### 本轮踩的两个坑（已修）
+
+1. **manifest 位置**：便携包在 `<root>\release-manifest.json`，生产在 `wb-proxy\release-manifest.json`。第一次 promote 把 package 根传成 `wb-shell` → 立刻失败；**失败发生在改动之前**，外壳被自动拉起，生产无影响（04:53:49–04:54:00，仅一次短暂重启）。
+2. **误杀演练实例**：停外壳的过滤器匹配过宽（`wb_proxy.py` 全路径），把 8799 的克隆实例一起杀了；已限定只匹配 `wb-shell` 路径。
+
+### 备份与回滚锚点（本轮新增）
+
+- 生产侧：`C:\Desktop\wb-shell\wb-proxy\updates\backup-1.10.9\`（61 个文件，由产品 `backup_current` 生成）
+- 仓库侧：`maintenance\baseline\core-sha256.v1.10.9.txt`
+- 发布物：`repo\dist\workbuddy2api-hub-v1.10.9.zip` + `SHA256SUMS`（dist 被 gitignore，随 Release 归档）

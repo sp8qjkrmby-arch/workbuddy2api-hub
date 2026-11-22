@@ -11,7 +11,8 @@ cd C:\Desktop\2api维护\repo
 powershell -ExecutionPolicy Bypass -File maintenance\verify-trunk-baseline.ps1
 ```
 
-期望输出：`MATCH 61 / MISSING-EXPECTED 3 / DIFF 0`，退出码 0。
+期望输出：`MATCH 61 / MISSING-EXPECTED 3`（默认自动取最新基线文件 `baseline\core-sha256.v*.txt`），退出码 0。
+发新版时用 `-AllowChanged wb_proxy.py,...` 声明"已声明的变更"，它们会记为 `DIFF-ALLOWED` 而不判失败。
 
 | 状态 | 含义 |
 |---|---|

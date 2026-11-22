@@ -50,7 +50,7 @@ DEFAULTS = {
     # A：周期后台检查的间隔（小时）。0 = 关闭周期检查。
     # 真正联网的频率还受 updater.CHECK_MIN_INTERVAL 节流保护（连点也不会打爆限流）。
     "update_check_hours": 6,
-    "repo": "ardeyouxipianyi/workbuddy2api-hub",
+    "repo": "sp8qjkrmby-arch/workbuddy2api-hub",
     "update_mirror": "",
     "keep_backups": 3,
     # 运行时

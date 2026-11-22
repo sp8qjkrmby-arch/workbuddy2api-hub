@@ -550,7 +550,7 @@ class Updater(object):
         self.config = config
         self.service = service
         self.core_dir = effective["core_dir"]
-        self.repo = config.get("repo") or "ardeyouxipianyi/workbuddy2api-hub"
+        self.repo = config.get("repo") or "sp8qjkrmby-arch/workbuddy2api-hub"
         self.mirror = (config.get("update_mirror") or "").strip()
         self.keep_backups = int(config.get("keep_backups") or 3)
         from paths import data_dir, DATA_DIR_NAME

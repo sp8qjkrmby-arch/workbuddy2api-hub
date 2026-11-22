@@ -9,8 +9,8 @@
 | # | 问题 | 状态 | 位置 | 影响 |
 |---|---|---|---|---|
 | 1 | `read_core_version()` 只读文件前 400 000 字符，而 v1.10.8 的 `version` 在偏移 **423 277** | ✅ **已修**（2026-11-22，全文读取 8 MB 上限） | `launcher\service.py:84` | 底栏显示"版本 ?"、`update-state.current_version` 为空 |
-| 2 | **版本双轨**：release tag ≠ 包内 `version`，`validate_stage` 要求相等 | 🟡 待修 | `wb-proxy\wb_update_portable.py` | 面板"安装更新"即使仓库恢复也必然失败 |
-| 3 | 更新仓库硬编码 4 处指向已 404 的仓库 | 🟡 已冻结，未改指向 | `launcher\updater.py:553`、`launcher\config.py:53`、`wb-proxy\wb_updates.py:35`、`wb-proxy\wb_update_portable.py:25` | 每 6 h 一次无效请求（已关检查） |
+| 2 | **版本双轨**：release tag ≠ 包内 `version` | ✅ **已解决**（约定 tag == manifest == server_version；v1.10.9 三处一致） | `wb-proxy\wb_update_portable.py` | — |
+| 3 | 更新仓库硬编码 4 处指向已 404 的仓库 | ✅ **已修**（4 处全改指自维护仓库；通道已实测可用） | `launcher\updater.py:553`、`launcher\config.py:53`、`wb-proxy\wb_updates.py:35`、`wb-proxy\wb_update_portable.py:25` | 已恢复检查（`check_update_on_launch=true`） |
 | 4 | 内核被外部终止：82 次启动中 38 次退出码 `0x40010004` | 🔵 未查根因 | `data\core-8788.log` | 偶发断流，看门狗兜住 |
 | 5 | `build_shell.ps1` 引用的 `tests\setup_vendor.ps1` 在生产目录**不存在** | 🟡 待修 | `wb-shell\build_shell.ps1` | 外壳无法从生产目录重建 |
 | 6 | 生产目录无任何测试；外壳的 31 个探针测试只在旧目录 `C:\Desktop\2api\tests\` | 🟡 待迁移 | — | 外壳层没有回归网 |

@@ -27,7 +27,7 @@
 | P1-1 取回 v1.10.8 源码 | ✅ | 来自 `M-strange/workbuddy2api-hub` tag `v1.10.8`；与生产基线比对 **60/64 逐字节一致、0 差异**，另 4 项已查清（构建产物 / 上游删但生产残留 / 本地 .bak） |
 | P1-2 合并可信主干 | ✅（方式修订） | 不再"从 v1.7.4 增量补"，而是**直接用 v1.10.8 快照重建主干**（v1.7.4 缺 21 个顶层项，无法增量补齐），并把 `wb_entitlements.py` 从 `acc0b332` 取回补上 |
 | P1-3 修三个小 bug | ◐ 1/3 完成 | `read_core_version` 已修并部署（底栏显示 1.10.8）；版本双轨、404 噪音待做 |
-| P1-4 打包 + 旁路验证 | ◐ 部分 | 主干已在隔离端口 8799 跑通端到端（真实上游回复）；便携包尚未生成 |
+| P1-4 打包 + 旁路验证 | ✅ | 便携包 **10.31 MB**（61 受管文件 + CPython 3.12.15 + manifest），8799 冒烟 PASS；已发 **Release v1.10.9** 并装上生产 |
 | P1-5 CI | ◐ 本地全绿 | **全量 261 passed / 0 failed / 0 skipped（59.9s）**；`check_clean_checkout` 通过；GitHub Actions 未启用 |
 | P0-3 生产代码入库 | ✅ | 分支 `main` 两个提交 + tag `v1.10.8-local.1`；旧状态留存 tag `legacy-fork-v1.7.4` |
 | P0-4 账号体检 | ⬜ 未开始 | 11-23 那批 token 到期就在明天 |
@@ -130,7 +130,7 @@
 
 | 编号 | 任务 | 关键点 | 验收标准 |
 |---|---|---|---|
-| **P2-1** | 自建更新通道 | 4 处硬编码：`launcher/updater.py:553`、`launcher/config.py:53`、`wb-proxy/wb_updates.py:35`、`wb-proxy/wb_update_portable.py:25`；另有 `WB_UPDATE_REPO` 环境变量旁路、`shell.json.update_mirror` 键可用。指向自己仓库的 release（或静态 JSON + zip） | 端到端装一次成功（**交接文档承认从未在生产跑过**），失败能回滚 |
+| **P2-1** ✅ | 自建更新通道（2026-11-23 完成：4 处指向已改、Release 已发、克隆演练 INSTALL/ROLLBACK 均 PASS、生产已上线 v1.10.9） | 4 处硬编码：`launcher/updater.py:553`、`launcher/config.py:53`、`wb-proxy/wb_updates.py:35`、`wb-proxy/wb_update_portable.py:25`；另有 `WB_UPDATE_REPO` 环境变量旁路、`shell.json.update_mirror` 键可用。指向自己仓库的 release（或静态 JSON + zip） | 端到端装一次成功（**交接文档承认从未在生产跑过**），失败能回滚 |
 | **P2-2** | 外壳纳入版本管理 | launcher 与内核的"契约"（要哪个 manifest 键、要哪个 CLI 参数、要哪个 /api 路径）写成 `docs/SHELL-CONTRACT.md`；`2api` 的 31 个测试迁回主干 | 契约文档 + 测试都在 `repo` 里 |
 | **P2-3** | 监控与告警 | `/health` 探活、账号失效、5xx 率、`0x40010004` 事件计数；日志轮转已有（2 MB×3 / 8 MB×3），补"启动退出码审计" | 一份每日摘要（可推送到本对话/托盘） |
 | **P2-4** | 数据治理 | `usage.jsonl` 按月归档并压缩；`logs.sqlite3` 定期 VACUUM；备份目录 ACL 收紧（含明文 token）；考虑备份用 DPAPI 加密 | 磁盘增长可预测；备份目录仅本用户可读 |

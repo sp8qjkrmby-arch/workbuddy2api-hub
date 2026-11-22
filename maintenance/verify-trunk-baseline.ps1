@@ -28,7 +28,11 @@ $ErrorActionPreference = 'Stop'
 $here = $PSScriptRoot
 if (-not $here) { $here = Split-Path -Parent $MyInvocation.MyCommand.Path }
 if (-not $Root)     { $Root = Split-Path -Parent $here }
-if (-not $Baseline) { $Baseline = Join-Path $here 'baseline\core-sha256.v1.10.8.txt' }
+if (-not $Baseline) {
+    # 默认用最新录制的那份基线（发新版后重录）
+    $latest = Get-ChildItem -LiteralPath (Join-Path $here 'baseline') -Filter 'core-sha256.v*.txt' | Sort-Object Name -Descending | Select-Object -First 1
+    if ($latest) { $Baseline = $latest.FullName }
+}
 
 # -AllowChanged 支持逗号分隔或空格分隔
 $AllowChanged = @($AllowChanged | ForEach-Object { $_ -split ',' } | Where-Object { $_ })

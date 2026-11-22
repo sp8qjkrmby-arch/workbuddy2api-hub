@@ -1,6 +1,6 @@
 ﻿# 知识库索引（字典入口）
 
-> 生成时间：2026-11-22 21:14 ｜ 由 `scripts\build-handbook-index.ps1` 自动汇总，**改了分册就重跑**。
+> 生成时间：2026-11-23 04:57 ｜ 由 `scripts\build-handbook-index.ps1` 自动汇总，**改了分册就重跑**。
 >
 > **用法（省上下文的规矩）**：
 > 1. 先看下面的速查表，定位到**一个**主题；
@@ -34,7 +34,8 @@
 | 今天改了什么、怎么回滚 | `18-worklog-2026-11-22.md` |
 | 接下来做什么、优先级 | `19-next-steps.md` |
 | 理解内核架构、请求链路、模块分工 | `20-architecture.md` |
-| 看不懂某个词 | `21-glossary.md` |
+| 看不懂某个词 | `21-glossary.md` |
+| 要发新版 / 打包 / 安装回滚 | `22-release-pipeline.md` |
 
 ## 2. 全部分册（自动生成）
 
@@ -43,13 +44,13 @@
 | 01 | **environment** | 换机器、排查"命令找不到/连不上网/端口占用"、确认工具版本时 | Windows, Python, node, 代理, 7897, 端口, 8788, 63045, 硬件 | 41 | 2.5 | `01-environment.md` |
 | 02 | **paths** | 找文件、判断"这份代码在哪、谁在跑、哪份是权威"时 | 目录, wb-shell, 2api, repo, data, accounts, usage, launcher, maintenance | 70 | 4.3 | `02-paths.md` |
 | 03 | **processes** | 怀疑没在跑、想看 PID、要判断"能不能动这个进程"时 | 进程, PID, pythonw, launcher, wb_proxy, 看门狗, 单实例 | 35 | 2.3 | `03-processes.md` |
-| 04 | **versions** | 看到版本号对不上、"底栏显示版本 ?"、想升级、判断某个 tag 能不能用时 | 版本, 1.10.8, 1.7.4, 2.1.3, 双轨, tag, release-manifest, validate_stage | 40 | 2.7 | `04-versions.md` |
+| 04 | **versions** | 看到版本号对不上、"底栏显示版本 ?"、想升级、判断某个 tag 能不能用时 | 版本, 1.10.8, 1.10.9, 1.7.4, 2.1.3, 双轨, tag, release-manifest, validate_stage | 41 | 2.9 | `04-versions.md` |
 | 05 | **sources** | 要补代码/比对上游/怀疑"我们这份是不是原版"、找替代源时 | 溯源, M-strange, niyouqianma, 404, 删号, 哈希, wb_entitlements, acc0b332 | 39 | 2.8 | `05-sources.md` |
 | 06 | **start-stop** | 要启停服务、改完配置要生效、服务没起来时 | 启动, 停止, 重启, 启动.vbs, 看门狗, restart-wb-shell, 8788 | 45 | 3 | `06-runbook-start-stop.md` |
 | 07 | **backup** | 要做/恢复/校验备份、换机迁移、怀疑丢了数据时 | 备份, 恢复, 计划任务, DPAPI, 明文token, 冷备份 | 54 | 3.1 | `07-runbook-backup-restore.md` |
 | 08 | **config** | 改配置、解释某个开关、排查"为什么设置没生效"时 | shell.json, settings.json, 端口, 看门狗, 更新检查, 面板密码, PBKDF2, 限额 | 54 | 3.4 | `08-config-reference.md` |
 | 09 | **logs** | 排查异常、怀疑有静默错误、想知道日志写在哪/怎么轮转时 | shell.log, core-8788.log, 轮转, 0x40010004, Traceback, ERROR | 43 | 2.5 | `09-logs.md` |
-| 10 | **verification** | 改完代码要验收、想确认"仓库==生产"、准备提交/发版前 | 基线校验, 冒烟, run_all, 261, check_clean_checkout, 61 MATCH | 45 | 2.8 | `10-verification.md` |
+| 10 | **verification** | 改完代码要验收、想确认"仓库==生产"、准备提交/发版前 | 基线校验, 冒烟, run_all, 261, check_clean_checkout, 61 MATCH | 46 | 3 | `10-verification.md` |
 | 11 | **git** | 提交/推送/建 tag、认证报错、别人克隆后脚本坏了时 | push, GCM, OAuth, GH007, filter-branch, credential.helper, tag, eol, crlf | 58 | 3.3 | `11-git-workflow.md` |
 | 12 | **rules** | 动手改任何东西之前（尤其是"顺手改一点"的冲动出现时） | 红线, 禁止, 提交纪律, 生产保护, 端口, 测试 | 33 | 2.7 | `12-rules.md` |
 | 13 | **known-issues** | 遇到怪现象先查这里；计划下一步做修复时 | bug, 待修, 版本双轨, 404, 0x40010004, setup_vendor, DPAPI | 33 | 3.1 | `13-known-issues.md` |
@@ -58,9 +59,11 @@
 | 16 | **decisions** | 纠结"该不该升级/该不该跟随社区/要不要重构"时 | 决策, 不追新, 自建通道, 不重构, 替代provider, 记录理由 | 37 | 3.2 | `16-decisions.md` |
 | 17 | **history-shell** | 想知道"外壳为什么长这样"、某个设计（托盘/密码/LAN/看门狗）的来历时 | 外壳历史, 交接文档, 10-12, 10-19, 托盘, 看门狗, 面板密码, 工作区分身 | 36 | 2.7 | `17-history-shell.md` |
 | 18 | **worklog** | 想知道"今天到底改了什么、为什么改、怎么回滚"时 | 2026-11-22, 接手, 备份, 重启, 推送, 测试, 261, GH007 | 44 | 2.5 | `18-worklog-2026-11-22.md` |
-| 19 | **next-steps** | 准备继续做维护、排优先级时 | 待办, P1-4, 便携包, 更新通道, 外壳测试, 监控 | 52 | 3 | `19-next-steps.md` |
+| 18 | **worklog-latest** | 想知道最近一轮做了什么、生产现在是什么版本 | 2026-11-23, 便携包, release, v1.10.9, 演练, 上线, 基线重录 | 29 | 2.2 | `18-worklog-2026-11-23.md` |
+| 19 | **next-steps** | 准备继续做维护、排优先级时 | 待办, P1-4, 便携包, 更新通道, 外壳测试, 监控 | 52 | 3.2 | `19-next-steps.md` |
 | 20 | **architecture** | 要改内核、理解一次请求怎么走、找某个功能在哪个模块时 | 模块, 请求链路, SSE, 账号池, 冷却, 端点, wb_proxy | 65 | 3.8 | `20-architecture.md` |
 | 21 | **glossary** | 遇到看不懂的专有名词/缩写/自定义术语时 | 术语, 外壳, 载荷, 基线, 双轨, portable.txt, PATCHED-BY-OPS, egress | 31 | 2.8 | `21-glossary.md` |
+| 22 | **release-pipeline** | 要发新版、打便携包、验证安装/回滚、排查"更新按钮没反应"时 | 打包, release, portable, SHA256SUMS, publish, run_update, 回滚, 8799, promote | 76 | 5.3 | `22-release-pipeline.md` |
 
 ## 3. 原始证据（大文件，按需读）
 
@@ -88,4 +91,4 @@
 | 更新时机 | 每次"踩新坑 / 改架构 / 改流程"后立即补，别攒 |
 
 
-> 统计：共 21 册，合计约 943 行 / 62.9 KB。
+> 统计：共 23 册，合计约 1050 行 / 71 KB。
